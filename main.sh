@@ -13,7 +13,7 @@ $nameOfServer="server"
 
 # Run from root
 
-myPath='/tmp'
+myPath='/tmp/quickOpenVPN'
 
 
 # Installing updates
