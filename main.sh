@@ -13,7 +13,7 @@ $nameOfServer="server"
 
 # Run from root
 
-myPath=`pwd`
+myPath='/tmp'
 
 
 # Installing updates
