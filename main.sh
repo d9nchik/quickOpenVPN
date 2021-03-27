@@ -38,20 +38,19 @@ set_var EASYRSA_REQ_OU         $ou
 set_var EASYRSA_ALGO           "ec"
 set_var EASYRSA_DIGEST         "sha512"" > vars
 
-.$myPath/utilities/createCA.exp $organization $caPassword
+$myPath/utilities/createCA.exp $organization $caPassword
 
-.$myPath/utilities/createSereverCertificate.exp $nameOfServer
+$myPath/utilities/createSereverCertificate.exp $nameOfServer
 EOF
 
 cp /home/$myUser/easy-rsa/pki/private/server.key /etc/openvpn/server/
 
 sudo -i -u $myUser bash << EOF
 cd ~/easy-rsa
-./sign $nameOfServer
 
 # change executing directory
 
-.$myPath/utilities/signCertificate.exp $nameOfServer $caPassword server
+$myPath/utilities/signCertificate.exp $nameOfServer $caPassword server
 
 EOF
 
@@ -69,10 +68,10 @@ mkdir -p ~/client-configs/keys
 chmod -R 700 ~/client-configs
 
 cd ~/easy-rsa
-.$myPath/utilities/createClientCertificate client1
+$myPath/utilities/createClientCertificate client1
 cp pki/private/client1.key ~/client-configs/keys/
 
-.$myPath/utilities/signCertificate.exp client1 $caPassword client
+$myPath/utilities/signCertificate.exp client1 $caPassword client
 
 cp pki/issued/client1.crt ~/client-configs/keys/
 cp ~/easy-rsa/ta.key ~/client-configs/keys/
