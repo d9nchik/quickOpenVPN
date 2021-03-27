@@ -40,7 +40,7 @@ set_var EASYRSA_DIGEST         "sha512"" > vars
 
 $myPath/utilities/createCA.exp $organization $caPassword
 
-$myPath/utilities/createSereverCertificate.exp $nameOfServer
+$myPath/utilities/createServerCertificate.exp $nameOfServer
 EOF
 
 cp /home/$myUser/easy-rsa/pki/private/server.key /etc/openvpn/server/
@@ -68,7 +68,7 @@ mkdir -p ~/client-configs/keys
 chmod -R 700 ~/client-configs
 
 cd ~/easy-rsa
-$myPath/utilities/createClientCertificate client1
+$myPath/utilities/createClientCertificate.exp client1
 cp pki/private/client1.key ~/client-configs/keys/
 
 $myPath/utilities/signCertificate.exp client1 $caPassword client
