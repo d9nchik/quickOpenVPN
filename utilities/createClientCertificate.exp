@@ -17,7 +17,7 @@ if {$force_conservative} {
 
 
 set timeout -1
-spawn ~/easy-rsa/easyrsa gen-req clientName nopass
+spawn ~/easy-rsa/easyrsa gen-req $clientName nopass
 match_max 100000
 expect -exact "Common Name (eg: your user, host, or server name) \[client1\]:"
 send -- "\r"
