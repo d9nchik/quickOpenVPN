@@ -1,0 +1,28 @@
+#!/usr/bin/expect -f
+#
+
+set organization [lindex $argv 0]
+set password [lindex $argv 1]
+
+set force_conservative 0  ;# set to 1 to force conservative mode even if
+			  ;# script wasn't run conservatively originally
+if {$force_conservative} {
+	set send_slow {1 .1}
+	proc send {ignore arg} {
+		sleep .1
+		exp_send -s -- $arg
+	}
+}
+
+set timeout -1
+spawn ~/easy-rsa/easyrsa build-ca
+match_max 100000
+expect -exact "\r
+Enter New CA Key Passphrase: "
+send -- "$password\r"
+expect -exact "\r
+Re-Enter New CA Key Passphrase: "
+send -- "$password\r"
+expect -exact "Common Name (eg: your user, host, or server name) \[Easy-RSA CA\]:"
+send -- "$organization\r"
+expect eof
