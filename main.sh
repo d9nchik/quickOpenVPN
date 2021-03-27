@@ -88,7 +88,7 @@ echo "
 net.ipv4.ip_forward = 1" >> /etc/sysctl.conf
 sysctl -p
 deafultInterface=`ip r | awk '/^default/ {print $5}'`
-sed -i '1i# START OPENVPN RULES
+echo '# START OPENVPN RULES
 # NAT table rules
 *nat
 :POSTROUTING ACCEPT [0:0]
@@ -96,7 +96,7 @@ sed -i '1i# START OPENVPN RULES
 -A POSTROUTING -s 10.8.0.0/8 -o $deafultInterface -j MASQUERADE
 COMMIT
 # END OPENVPN RULES
-' /etc/ufw/before.rules
+' | cat - /etc/ufw/before.rules > temp && mv temp /etc/ufw/before.rules
 
 # DEFAULT_FORWARD_POLICY="ACCEPT" in /etc/default/ufw
 
