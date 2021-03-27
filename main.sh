@@ -21,9 +21,7 @@ apt update
 apt upgrade -y
 apt -y install easy-rsa expect openvpn
 
-su $myUser
-
-
+sudo -i -u $myUser bash << EOF
 mkdir ~/easy-rsa
 ln -s /usr/share/easy-rsa/* ~/easy-rsa/
 chmod 700 /home/$myUser/easy-rsa
@@ -43,12 +41,11 @@ set_var EASYRSA_DIGEST         "sha512"" > vars
 ./$myPath/utilities/createCA.exp $organization $caPassword
 
 ./$myPath/utilities/createSereverCertificate.exp $nameOfServer
-
-exit
+EOF
 
 cp /home/$myUser/easy-rsa/pki/private/server.key /etc/openvpn/server/
 
-su $myUser
+sudo -i -u $myUser bash << EOF
 cd ~/easy-rsa
 ./sign $nameOfServer
 
@@ -56,36 +53,36 @@ cd ~/easy-rsa
 
 ./$myPath/utilities/signCertificate.exp $nameOfServer $caPassword server
 
-exit
+EOF
 
 cp /home/$myUser/easy-rsa/pki/issued/server.crt /home/$myUser/pki/ca.crt /etc/openvpn/server
 
-su $myUser
+sudo -i -u $myUser bash << EOF
 
 cd ~/easy-rsa
 openvpn --genkey --secret ta.key
-exit
-sudo cp /home/$myUser/easy-rsa/ta.key /etc/openvpn/server
+EOF
+cp /home/$myUser/easy-rsa/ta.key /etc/openvpn/server
+sudo -i -u $myUser bash << EOF
 su $myUser
 mkdir -p ~/client-configs/keys
 chmod -R 700 ~/client-configs
 
 cd ~/easy-rsa
-./createClientCertificate client1
+./$myPath/utilities/createClientCertificate client1
 cp pki/private/client1.key ~/client-configs/keys/
 
 ./$myPath/utilities/signCertificate.exp client1 $caPassword client
 
 cp pki/issued/client1.crt ~/client-configs/keys/
 cp ~/easy-rsa/ta.key ~/client-configs/keys/
-exit
+EOF
 cp /etc/openvpn/server/ca.crt /home/$myUser/client-configs/keys/
 chown $myUser.$myUser /home/$myUser/client-configs/keys/*
 
 cp /usr/share/doc/openvpn/examples/sample-config-files/server.conf.gz /etc/openvpn/server/
 gunzip /etc/openvpn/server/server.conf.gz
 
-# cahnge to real path
 cp $myPath/utilities/utilities/server.conf /etc/openvpn/server/server.conf
 echo "
 net.ipv4.ip_forward = 1" >> /etc/sysctl.conf
@@ -110,7 +107,7 @@ COMMIT
 systemctl -f enable openvpn-server@server.service
 systemctl start openvpn-server@server.service
 
-su $myUser
+sudo -i -u $myUser bash << EOF
 mkdir -p ~/client-configs/files
 cp $myPath/utilities/base.conf ~/client-configs/base.conf
 
@@ -119,3 +116,4 @@ chmod 700 ~/client-configs/make_config.sh
 
 cd ~/client-configs
 ./make_config.sh client1
+EOF
