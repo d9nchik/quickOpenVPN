@@ -13,6 +13,8 @@ $nameOfServer="server"
 
 # Run from root
 
+myPath=`pwd`
+
 
 # Installing updates
 apt update
@@ -37,12 +39,9 @@ set_var EASYRSA_REQ_OU         $ou
 set_var EASYRSA_ALGO           "ec"
 set_var EASYRSA_DIGEST         "sha512"" > vars
 
-# change executing directory
-./createCA.exp $organization $caPassword
+./$myPath/utilities/createCA.exp $organization $caPassword
 
-# change executing directory
-
-./createSereverCertificate.exp $nameOfServer
+./$myPath/utilities/createSereverCertificate.exp $nameOfServer
 
 exit
 
@@ -54,7 +53,7 @@ cd ~/easy-rsa
 
 # change executing directory
 
-./signCertificate.exp $nameOfServer $caPassword server
+./$myPath/utilities/signCertificate.exp $nameOfServer $caPassword server
 
 exit
 
@@ -74,9 +73,7 @@ cd ~/easy-rsa
 ./createClientCertificate client1
 cp pki/private/client1.key ~/client-configs/keys/
 
-# change executing directory
-
-./signCertificate.exp client1 $caPassword client
+./$myPath/utilities/signCertificate.exp client1 $caPassword client
 
 cp pki/issued/client1.crt ~/client-configs/keys/
 cp ~/easy-rsa/ta.key ~/client-configs/keys/
@@ -88,7 +85,7 @@ cp /usr/share/doc/openvpn/examples/sample-config-files/server.conf.gz /etc/openv
 gunzip /etc/openvpn/server/server.conf.gz
 
 # cahnge to real path
-cp server.conf /etc/openvpn/server/server.conf
+cp $myPath/utilities/utilities/server.conf /etc/openvpn/server/server.conf
 echo "
 net.ipv4.ip_forward = 1" >> /etc/sysctl.conf
 sysctl -p
@@ -101,7 +98,7 @@ sed -i '1i# START OPENVPN RULES
 -A POSTROUTING -s 10.8.0.0/8 -o $deafultInterface -j MASQUERADE
 COMMIT
 # END OPENVPN RULES
-' todo.txt
+' /etc/ufw/before.rules
 
 # DEFAULT_FORWARD_POLICY="ACCEPT" in /etc/default/ufw
 
@@ -114,9 +111,9 @@ systemctl start openvpn-server@server.service
 
 su $myUser
 mkdir -p ~/client-configs/files
-cp base.conf ~/client-configs/base.conf
+cp $myPath/utilities/base.conf ~/client-configs/base.conf
 
-cp make_config.sh ~/client-configs/make_config.sh
+cp $myPath/utilities/make_config.sh ~/client-configs/make_config.sh
 chmod 700 ~/client-configs/make_config.sh
 
 cd ~/client-configs
