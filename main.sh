@@ -18,7 +18,7 @@ myPath=`pwd`
 
 # Installing updates
 apt update
-apt upgrade
+apt upgrade -y
 apt -y install easy-rsa expect openvpn
 
 su $myUser
